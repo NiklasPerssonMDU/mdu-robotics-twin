@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDU Robotics Curriculum Twin</title>
+
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Vis.js for Network/Graph Rendering -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>MDU Robotics</h1>
+                <p class="subtitle">Curriculum Digital Twin</p>
+                <div class="badge">Neo4j Powered</div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="panel course-details">
+                    <h3>Course Details</h3>
+                    <div id="course-info" class="empty-state">
+                        Select a course in the graph to view details.
+                    </div>
+                    <div id="course-actions"
+                        style="display: none; margin-top: 12px; border-top: 1px solid #334155; padding-top: 12px;">
+                        <button class="btn btn-primary" id="btn-remove-course"
+                            style="width: 100%; background: #ef4444; border-color: #dc2626;">Permanently Remove
+                            Course</button>
+                    </div>
+                </div>
+
+                <div class="panel simulation-panel">
+                    <h3>Impact Analysis</h3>
+                    <p class="help-text">See what happens if a student fails or drops this course. Which future courses
+                        will be blocked?</p>
+                    <button class="btn btn-primary" id="btn-simulate" disabled>Select a course to simulate</button>
+                    <div id="impact-results"></div>
+                </div>
+
+                <div class="panel simulation-panel" id="replace-course-panel" style="display:none; margin-top: 16px;">
+                    <h3>Replace Course</h3>
+                    <p class="help-text">Substitute this course with a new one.</p>
+                    <form id="replace-form">
+                        <input type="hidden" id="rc-old-code">
+                        <input type="hidden" id="rc-old-year">
+                        <input type="hidden" id="rc-old-period">
+
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label
+                                style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">KOD:</label>
+                            <input type="text" id="rc-code" class="form-input"
+                                style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;"
+                                placeholder="T.ex. DVA999">
+                        </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label
+                                style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">NAMN:</label>
+                            <input type="text" id="rc-name" class="form-input"
+                                style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;"
+                                placeholder="Kursnamn">
+                        </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label
+                                style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">ÅR:</label>
+                            <select id="rc-year" class="form-input"
+                                style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;">
+                                <option value="1">År 1</option>
+                                <option value="2">År 2</option>
+                                <option value="3">År 3</option>
+                                <option value="4">År 4</option>
+                                <option value="5">År 5</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">HP
+                                (CREDITS):</label>
+                            <input type="number" id="rc-credits" class="form-input"
+                                style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;"
+                                step="0.5" placeholder="7.5">
+                        </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label
+                                style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">BEHÖRIGHETSKRAV:</label>
+                            <select id="rc-prereqs" class="form-input"
+                                style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff; height: 100px;"
+                                multiple>
+                                <!-- populated via JS -->
+                            </select>
+                            <small class="help-text" style="display: block; margin-top: 4px;">Håll in Ctrl/Cmd för att
+                                välja flera</small>
+                        </div>
+                        <div id="rc-warnings" style="color:#ef4444; font-size: 13px; margin: 8px 0; font-weight: 500;">
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btn-submit-replace"
+                            style="margin-top: 8px; width: 100%;">Byt ut kurs</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="legend">
+                    <h4>Legend (Year)</h4>
+                    <div class="legend-items">
+                        <div class="legend-item"><span class="color-dot y1"></span>Year 1</div>
+                        <div class="legend-item"><span class="color-dot y2"></span>Year 2</div>
+                        <div class="legend-item"><span class="color-dot y3"></span>Year 3</div>
+                        <div class="legend-item"><span class="color-dot y4"></span>Year 4</div>
+                        <div class="legend-item"><span class="color-dot y5"></span>Year 5 (Project/Thesis)</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Graph Area -->
+        <main class="graph-container">
+            <div class="toolbar">
+                <button class="icon-btn" id="btn-recenter" title="Recenter Graph">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="btn-reset" title="Reset Database to Original Curriculum"
+                    style="margin-left:8px;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="graph">
+                <div class="loading">Initializing Graph...</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="app.js"></script>
+</body>
+
+</html>
