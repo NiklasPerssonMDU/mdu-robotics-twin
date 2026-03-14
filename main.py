@@ -34,8 +34,7 @@ PASSWORD = os.getenv("NEO4J_PASSWORD", "robotics2026")
 AUTH = (USERNAME, PASSWORD)
 driver = GraphDatabase.driver(URI, auth=AUTH)
 
-# Serve the static files from /public at root /
-app.mount("/static", StaticFiles(directory="public"), name="public")
+# Mount static files correctly at bottom of file
 
 @app.get("/api/graph")
 def get_graph():
@@ -154,3 +153,7 @@ def reset_database():
 @app.on_event("shutdown")
 def shutdown_event():
     driver.close()
+
+# We mount the public folder at the root path "/" 
+# This must be at the END of the file so it doesn't override /api/ routes
+app.mount("/", StaticFiles(directory="public", html=True), name="public")
