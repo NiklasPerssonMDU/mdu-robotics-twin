@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         x: 0,
                         y: 4
                     },
-                    examinations: node.examinations || 'Ingen data'
+                    examinations: node.examinations || node.properties?.examinations || 'Ingen data'
                 };
             });
 
@@ -191,20 +191,22 @@ document.addEventListener('DOMContentLoaded', () => {
             sumTotalHp += node.credits;
 
             // Parse examinations string naively to get HP components
-            // e.g. "TEN 4.5 hp, LAB 3.0 hp"
+            // e.g. "TEN1 4.5 hp, LAB2 3.0 hp" -> matches TEN and 4.5
             const examStr = (node.examinations || "").toUpperCase();
-            const examParts = examStr.split(',');
-            examParts.forEach(part => {
-                const match = part.trim().match(/([A-Z]+)\s*([\d.]+)/);
-                if (match) {
-                    const type = match[1];
-                    const hp = parseFloat(match[2]);
-                    if (type === 'TEN') sumTen += hp;
-                    if (type === 'LAB') sumLab += hp;
-                    if (type === 'PRO') sumPro += hp;
-                    if (type === 'INL') sumInl += hp;
-                }
-            });
+            if (examStr && examStr !== "INGEN DATA") {
+                const examParts = examStr.split(',');
+                examParts.forEach(part => {
+                    const match = part.trim().match(/([A-Z]+)\d*\s*([\d.]+)/);
+                    if (match) {
+                        const type = match[1];
+                        const hp = parseFloat(match[2]);
+                        if (type === 'TEN' || type === 'MUN' || type === 'HEM') sumTen += hp;
+                        if (type === 'LAB') sumLab += hp;
+                        if (type === 'PRO') sumPro += hp;
+                        if (type === 'INL' || type === 'SEM' || type === 'OVN' || type === 'OBN') sumInl += hp;
+                    }
+                });
+            }
         });
 
         // Update summaries
@@ -232,14 +234,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 schedule[year][period].forEach(c => {
+                    // Safety fallback if examinations is missing on the node object
+                    const exams = c.examinations || c.properties?.examinations || "Ingen data";
                     html += `
                         <div class="sched-course">
                             <div class="sched-course-header">
                                 <span class="sched-course-code">${c.id}</span>
                                 <span class="sched-course-credits">${c.credits} hp</span>
                             </div>
-                            <div class="sched-course-name">${c.label.split('\n')[1] || c.id}</div>
-                            <div class="sched-course-exams">${c.examinations || "-"}</div>
+                            <div class="sched-course-name">${typeof c.label === 'string' ? (c.label.split('\\n')[1] || c.id) : c.id}</div>
+                            <div class="sched-course-exams">${exams}</div>
                         </div>
                     `;
                 });
@@ -293,6 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
+        const exams = node.examinations || node.properties?.examinations || 'Ingen data';
+
         courseInfoPanel.innerHTML = `
             <div class="course-card">
                 <div>
@@ -304,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="c-tag" style="margin-left:auto">${node.credits} hp | ${node.period}</span>
                 </div>
                 <div class="c-meta" style="margin-top:4px;">
-                    <span style="font-size:0.75rem; color:#cbd5e1; background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; width:100%;"><strong style="color:#94a3b8">Examination:</strong> ${node.examinations}</span>
+                    <span style="font-size:0.75rem; color:#cbd5e1; background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; width:100%;"><strong style="color:#94a3b8">Examination:</strong> ${exams}</span>
                 </div>
                 ${reqHtml}
             </div>
