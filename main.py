@@ -16,6 +16,7 @@ class CourseReplacementPayload(BaseModel):
     credits: float
     year: int
     period: str
+    examinations: str
     prerequisites: List[str]
 
 app = FastAPI()
@@ -40,7 +41,7 @@ driver = GraphDatabase.driver(URI, auth=AUTH)
 def get_graph():
     with driver.session() as session:
         # Get all courses
-        nodes_res = session.run("MATCH (n:Course) RETURN n.code AS id, n.name AS label, n.year AS group, n.credits AS credits, n.period AS period")
+        nodes_res = session.run("MATCH (n:Course) RETURN n.code AS id, n.name AS label, n.year AS group, n.credits AS credits, n.period AS period, n.examinations AS examinations")
         nodes = []
         for r in nodes_res:
             nodes.append({
@@ -50,6 +51,7 @@ def get_graph():
                 "title": f'Credits: {r["credits"]}<br>Period: {r["period"]}',
                 "credits": r["credits"],
                 "period": r["period"],
+                "examinations": r["examinations"],
                 "shape": "box",
                 "font": {"color": "white"}
             })
@@ -98,8 +100,9 @@ def replace_course(payload: CourseReplacementPayload):
             SET c.name = $name,
                 c.credits = $credits,
                 c.year = $year,
-                c.period = $period
-        ''', code=payload.code, name=payload.name, credits=payload.credits, year=payload.year, period=payload.period)
+                c.period = $period,
+                c.examinations = $examinations
+        ''', code=payload.code, name=payload.name, credits=payload.credits, year=payload.year, period=payload.period, examinations=payload.examinations)
         
         # Connect new prerequisites
         for req in payload.prerequisites:

@@ -3,23 +3,28 @@
     --bg-dark: #0f172a;
     --bg-panel: rgba(30, 41, 59, 0.7);
     --bg-panel-hover: rgba(30, 41, 59, 0.9);
-    
+
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
-    
+
     --accent-primary: #3b82f6;
     --accent-glow: rgba(59, 130, 246, 0.5);
-    
+
     --border-color: rgba(255, 255, 255, 0.1);
-    
+
     /* Year Colors */
-    --year-1: #10b981; /* Green */
-    --year-2: #3b82f6; /* Blue */
-    --year-3: #8b5cf6; /* Purple */
-    --year-4: #f59e0b; /* Orange */
-    --year-5: #ef4444; /* Red */
-    
+    --year-1: #10b981;
+    /* Green */
+    --year-2: #3b82f6;
+    /* Blue */
+    --year-3: #8b5cf6;
+    /* Purple */
+    --year-4: #f59e0b;
+    /* Orange */
+    --year-5: #ef4444;
+    /* Red */
+
     /* Typography */
     --font-family: 'Inter', sans-serif;
 }
@@ -57,7 +62,7 @@ body {
     display: flex;
     flex-direction: column;
     z-index: 10;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-header {
@@ -105,7 +110,7 @@ body {
 
 /* Panels */
 .panel {
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 16px;
@@ -113,8 +118,8 @@ body {
 }
 
 .panel:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .panel h3 {
@@ -159,7 +164,7 @@ body {
 }
 
 .c-tag {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     padding: 4px 8px;
     font-size: 0.75rem;
@@ -232,7 +237,7 @@ body {
 .sidebar-footer {
     padding: 24px;
     border-top: 1px solid var(--border-color);
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .legend h4 {
@@ -262,18 +267,229 @@ body {
     border-radius: 50%;
 }
 
-.y1 { background: var(--year-1); box-shadow: 0 0 8px var(--year-1); }
-.y2 { background: var(--year-2); box-shadow: 0 0 8px var(--year-2); }
-.y3 { background: var(--year-3); box-shadow: 0 0 8px var(--year-3); }
-.y4 { background: var(--year-4); box-shadow: 0 0 8px var(--year-4); }
-.y5 { background: var(--year-5); box-shadow: 0 0 8px var(--year-5); }
+.y1 {
+    background: var(--year-1);
+    box-shadow: 0 0 8px var(--year-1);
+}
+
+.y2 {
+    background: var(--year-2);
+    box-shadow: 0 0 8px var(--year-2);
+}
+
+.y3 {
+    background: var(--year-3);
+    box-shadow: 0 0 8px var(--year-3);
+}
+
+.y4 {
+    background: var(--year-4);
+    box-shadow: 0 0 8px var(--year-4);
+}
+
+.y5 {
+    background: var(--year-5);
+    box-shadow: 0 0 8px var(--year-5);
+}
 
 
-/* Main Graph Area */
-.graph-container {
+/* Main Content Area */
+.main-content {
     flex: 1;
     position: relative;
     background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Tabs Header */
+.tabs-header {
+    display: flex;
+    padding: 16px 24px 0 24px;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
+    align-items: center;
+}
+
+.tab-btn {
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    padding: 12px 24px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-family: var(--font-family);
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    color: var(--accent-primary);
+    border-bottom: 2px solid var(--accent-primary);
+}
+
+.tab-content {
+    display: none;
+    flex: 1;
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Schedule View Styles */
+#tab-schedule {
+    overflow-y: auto;
+    padding: 24px;
+    background: transparent;
+}
+
+.schedule-summary-bar {
+    display: flex;
+    gap: 16px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.summary-item .sum-value {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-left: 4px;
+}
+
+.total-credits-item {
+    margin-left: auto;
+    color: var(--accent-primary);
+}
+
+.total-credits-item .sum-value {
+    color: #60a5fa;
+}
+
+.schedule-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.schedule-year-group {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.schedule-year-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-period-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.schedule-period {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.schedule-period-title {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 8px;
+}
+
+.schedule-courses {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sched-course {
+    background: var(--bg-panel);
+    border-left: 4px solid var(--accent-primary);
+    padding: 12px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.2s;
+}
+
+.sched-course:hover {
+    transform: translateX(4px);
+    background: var(--bg-panel-hover);
+}
+
+.sched-course-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sched-course-code {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.sched-course-credits {
+    font-size: 0.75rem;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.sched-course-name {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.sched-course-exams {
+    font-size: 0.75rem;
+    color: #cbd5e1;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .toolbar {
@@ -299,11 +515,12 @@ body {
 }
 
 .icon-btn:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     transform: scale(1.05);
 }
 
 #graph {
+    flex: 1;
     width: 100%;
     height: 100%;
     outline: none;
@@ -320,9 +537,17 @@ body {
 }
 
 @keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
 }
 
 /* Vis.js Tooltips override */
@@ -334,6 +559,6 @@ div.vis-tooltip {
     font-family: var(--font-family) !important;
     padding: 12px !important;
     backdrop-filter: blur(8px) !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
     font-size: 0.875rem !important;
 }

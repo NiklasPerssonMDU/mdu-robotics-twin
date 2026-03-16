@@ -91,6 +91,13 @@
                         </div>
                         <div class="form-group" style="margin-top: 8px;">
                             <label
+                                style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">EXAMINATIONER:</label>
+                            <input type="text" id="rc-examinations" class="form-input"
+                                style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff;"
+                                placeholder="T.ex. TEN 4.5 hp, LAB 3.0 hp">
+                        </div>
+                        <div class="form-group" style="margin-top: 8px;">
+                            <label
                                 style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">BEHÖRIGHETSKRAV:</label>
                             <select id="rc-prereqs" class="form-input"
                                 style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #fff; height: 100px;"
@@ -122,27 +129,53 @@
             </div>
         </aside>
 
-        <!-- Main Graph Area -->
-        <main class="graph-container">
-            <div class="toolbar">
-                <button class="icon-btn" id="btn-recenter" title="Recenter Graph">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <circle cx="12" cy="12" r="2"></circle>
-                    </svg>
-                </button>
-                <button class="icon-btn" id="btn-reset" title="Reset Database to Original Curriculum"
-                    style="margin-left:8px;">
-                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                        <path d="M3 3v5h5"></path>
-                    </svg>
-                </button>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Tabs -->
+            <div class="tabs-header">
+                <button class="tab-btn active" data-tab="graph" id="tab-btn-graph">Curriculum Graph</button>
+                <button class="tab-btn" data-tab="schedule" id="tab-btn-schedule">Schedule & Examinations</button>
+
+                <div style="flex:1"></div>
+                <div class="toolbar" style="position: static; padding: 0;">
+                    <button class="icon-btn" id="btn-recenter" title="Recenter Graph">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <circle cx="12" cy="12" r="2"></circle>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" id="btn-reset" title="Reset Database to Original Curriculum"
+                        style="margin-left:8px;">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <div id="graph">
-                <div class="loading">Initializing Graph...</div>
+
+            <!-- Graph View -->
+            <div id="tab-graph" class="tab-content active">
+                <div id="graph">
+                    <div class="loading">Initializing Graph...</div>
+                </div>
+            </div>
+
+            <!-- Schedule View -->
+            <div id="tab-schedule" class="tab-content">
+                <div class="schedule-summary-bar">
+                    <div class="summary-item">Total TEN: <span id="sum-ten" class="sum-value">0</span> hp</div>
+                    <div class="summary-item">Total LAB: <span id="sum-lab" class="sum-value">0</span> hp</div>
+                    <div class="summary-item">Total PRO: <span id="sum-pro" class="sum-value">0</span> hp</div>
+                    <div class="summary-item">Total INL: <span id="sum-inl" class="sum-value">0</span> hp</div>
+                    <div class="summary-item total-credits-item">Program Total: <span id="sum-total"
+                            class="sum-value">0</span> hp</div>
+                </div>
+                <div class="schedule-grid" id="schedule-grid">
+                    <!-- Javascript will populate this -->
+                </div>
             </div>
         </main>
     </div>

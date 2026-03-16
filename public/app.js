@@ -7,6 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let nodesData = null;
     let edgesData = null;
 
+    // Tab Logic
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        });
+    });
+
     // Year to Color Mapping
     const yearColors = {
         1: { background: '#10b981', border: '#059669' }, // Green
@@ -46,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         size: 10,
                         x: 0,
                         y: 4
-                    }
+                    },
+                    examinations: node.examinations || 'Ingen data'
                 };
             });
 
@@ -146,10 +162,95 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            // Render Schedule View immediately after network is drawn
+            renderScheduleView();
+
         } catch (error) {
             console.error('Error fetching graph data:', error);
             container.innerHTML = `<div class="empty-state" style="color:#ef4444;">Failed to load graph data. Make sure backend is running.</div>`;
         }
+    }
+
+    function renderScheduleView() {
+        const grid = document.getElementById('schedule-grid');
+        if (!grid || !nodesData) return;
+
+        // Group courses by Year then Period
+        const schedule = {};
+        const allNodes = nodesData.get();
+
+        let sumTen = 0, sumLab = 0, sumPro = 0, sumInl = 0, sumTotalHp = 0;
+
+        allNodes.forEach(node => {
+            const y = node.group;
+            const p = node.period || "Other";
+            if (!schedule[y]) schedule[y] = {};
+            if (!schedule[y][p]) schedule[y][p] = [];
+            schedule[y][p].push(node);
+
+            sumTotalHp += node.credits;
+
+            // Parse examinations string naively to get HP components
+            // e.g. "TEN 4.5 hp, LAB 3.0 hp"
+            const examStr = (node.examinations || "").toUpperCase();
+            const examParts = examStr.split(',');
+            examParts.forEach(part => {
+                const match = part.trim().match(/([A-Z]+)\s*([\d.]+)/);
+                if (match) {
+                    const type = match[1];
+                    const hp = parseFloat(match[2]);
+                    if (type === 'TEN') sumTen += hp;
+                    if (type === 'LAB') sumLab += hp;
+                    if (type === 'PRO') sumPro += hp;
+                    if (type === 'INL') sumInl += hp;
+                }
+            });
+        });
+
+        // Update summaries
+        document.getElementById('sum-ten').textContent = sumTen;
+        document.getElementById('sum-lab').textContent = sumLab;
+        document.getElementById('sum-pro').textContent = sumPro;
+        document.getElementById('sum-inl').textContent = sumInl;
+        document.getElementById('sum-total').textContent = sumTotalHp;
+
+        let html = '';
+        Object.keys(schedule).sort((a, b) => a - b).forEach(year => {
+            html += `<div class="schedule-year-group">
+                <div class="schedule-year-title">
+                    <span class="color-dot y${year}"></span>
+                    Year ${year}
+                </div>
+                <div class="schedule-period-container">
+            `;
+
+            Object.keys(schedule[year]).sort().forEach(period => {
+                html += `
+                    <div class="schedule-period">
+                        <div class="schedule-period-title">${period}</div>
+                        <div class="schedule-courses">
+                `;
+
+                schedule[year][period].forEach(c => {
+                    html += `
+                        <div class="sched-course">
+                            <div class="sched-course-header">
+                                <span class="sched-course-code">${c.id}</span>
+                                <span class="sched-course-credits">${c.credits} hp</span>
+                            </div>
+                            <div class="sched-course-name">${c.label.split('\n')[1] || c.id}</div>
+                            <div class="sched-course-exams">${c.examinations || "-"}</div>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`; // End schedule-courses & schedule-period
+            });
+
+            html += `</div></div>`; // End schedule-period-container & schedule-year-group
+        });
+
+        grid.innerHTML = html;
     }
 
     function showCourseDetails(nodeId) {
@@ -200,7 +301,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="c-meta">
                     <span class="c-tag">Year ${group}</span>
-                    <span class="c-tag" style="margin-left:auto">${node.title.replace('<br>', ' • ')}</span>
+                    <span class="c-tag" style="margin-left:auto">${node.credits} hp | ${node.period}</span>
+                </div>
+                <div class="c-meta" style="margin-top:4px;">
+                    <span style="font-size:0.75rem; color:#cbd5e1; background:rgba(255,255,255,0.05); padding:6px; border-radius:4px; width:100%;"><strong style="color:#94a3b8">Examination:</strong> ${node.examinations}</span>
                 </div>
                 ${reqHtml}
             </div>
@@ -218,6 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('rc-name').value = "";
             document.getElementById('rc-credits').value = "";
             document.getElementById('rc-year').value = group;
+            document.getElementById('rc-examinations').value = node.examinations || "";
             document.getElementById('rc-warnings').innerHTML = "";
 
             const currentReqsIds = prereqs.map(e => e.to);
@@ -341,6 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const year = parseInt(document.getElementById('rc-year').value);
             const creditsInput = document.getElementById('rc-credits').value;
             const credits = parseFloat(creditsInput);
+            const examinations = document.getElementById('rc-examinations').value.trim();
 
             const select = document.getElementById('rc-prereqs');
             const prerequisites = Array.from(select.selectedOptions).map(opt => opt.value);
@@ -384,6 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         credits: credits,
                         year: year,
                         period: period,
+                        examinations: examinations,
                         prerequisites: prerequisites
                     })
                 });
