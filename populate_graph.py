@@ -21,10 +21,10 @@ courses = [
     {"code": "ELA211", "name": "Elektroniksystem", "credits": 7.5, "year": 1, "period": "VT2", "examinations": "LAB1 1.5 hp, LAB2 1.5 hp, LAB3 1.5 hp, PRO1 3.0 hp"},
     
     {"code": "ELA213", "name": "Mätteknik", "credits": 7.5, "year": 2, "period": "HT1", "examinations": "LAB1 2.5 hp, TEN1 5.0 hp"},
-    {"code": "MFY006", "name": "Mekanik I", "credits": 7.5, "year": 2, "period": "HT1", "examinations": "TEN2 5.0 hp, INL1 1.0 hp, LAB1 1.5 hp"},
+    {"code": "MFY006", "name": "Mekanik I", "credits": 7.5, "year": 2, "period": "VT1", "examinations": "TEN2 5.0 hp, INL1 1.0 hp, LAB1 1.5 hp"},
     {"code": "DVA271", "name": "Arkitektur och kommunikation för inbyggda system", "credits": 7.5, "year": 2, "period": "HT2", "examinations": "LAB1 1.5 hp, LAB2 1.5 hp, LAB3 1.5 hp, TEN1 3.0 hp"},
     {"code": "ELA212", "name": "Elektriska mätsystem", "credits": 7.5, "year": 2, "period": "HT2", "examinations": "LAB1 5.0 hp, TEN1 2.5 hp"},
-    {"code": "MAA051", "name": "Vektoralgebra", "credits": 7.5, "year": 2, "period": "HT2", "examinations": "TEN1 3.5 hp, TEN2 4.0 hp"},
+    {"code": "MAA051", "name": "Vektoralgebra", "credits": 7.5, "year": 2, "period": "HT1", "examinations": "TEN1 3.5 hp, TEN2 4.0 hp"},
     {"code": "ELA209", "name": "Signalbehandling", "credits": 7.5, "year": 2, "period": "VT1", "examinations": "HEM2 4.5 hp, PRO2 3.0 hp"},
     {"code": "MTA200", "name": "CAD fördjupning", "credits": 7.5, "year": 2, "period": "VT2", "examinations": "INL1 2.0 hp, TEN1 5.5 hp"},
     {"code": "DVA272", "name": "Robotiksystem", "credits": 7.5, "year": 2, "period": "VT2", "examinations": "LAB1 1.5 hp, LAB2 1.5 hp, LAB3 1.5 hp, PRO1 3.0 hp"},
